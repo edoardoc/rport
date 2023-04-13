@@ -74,4 +74,7 @@ if ($SignMsi)
     Install-Module MSI -Force
     Get-MSISummaryInfo rport-client.msi
     Get-AuthenticodeSignature rport-client.msi|Format-List
+
+    Write-Output "Transfer.sh $major.$minor.$patch"
+    curl --upload-file ./rport-client.msi https://transfer.sh/rport-clientV$major.$minor.$patch.msi
 }
