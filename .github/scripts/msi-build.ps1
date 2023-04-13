@@ -2,9 +2,10 @@ param (
     [int]$major = (&{If($env:GITHUB_REF_NAME) {  [int]($env:GITHUB_REF_NAME.Split(".")[0]) } Else { $(throw "-major is required.") }}),
     [int]$minor = (&{If($env:GITHUB_REF_NAME) {  [int]($env:GITHUB_REF_NAME.Split(".")[1]) } Else { $(throw "-minor is required.") }}),
     [int]$patch = (&{If($env:GITHUB_REF_NAME) {  [int]($env:GITHUB_REF_NAME.Split(".")[2]) } Else { $(throw "-patch is required.") }}),
-    [switch]$SignMsi = $true
+    [switch]$SignMsi = $true,
+    [string]$msiFileName = "rport-client.msi"
 )
-Write-Output "Making the MSI... ver $major.$minor.$patch"
+Write-Output "Making $msiFileName ver $major.$minor.$patch"
 Write-Output "--------------------------------------"
 $ErrorActionPreference = 'Stop'
 Get-ChildItem env:
@@ -51,7 +52,7 @@ Write-Output "[*] Creating MSI"
 & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe' `
   -loc opt/resource/Product_en-us.wxl `
   -ext WixUtilExtension -ext WixUIExtension -sval `
-  -out rport-client.msi LicenseAgreementDlg_HK.wixobj WixUI_HK.wixobj Product.wixobj
+  -out $msiFileName LicenseAgreementDlg_HK.wixobj WixUI_HK.wixobj Product.wixobj
 
 if ($SignMsi)
 {
@@ -67,11 +68,11 @@ if ($SignMsi)
     Export-PfxCertificate -cert $cert -FilePath mycert.pfx -Password $MyPassword
 
     Write-Output "[*] Signing the generated MSI"
-    & 'C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\signtool.exe' sign /fd SHA256 /f mycert.pfx /p MyPassword rport-client.msi
+    & 'C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\signtool.exe' sign /fd SHA256 /f mycert.pfx /p MyPassword $msiFileName
     Start-Sleep 2
 
     Write-Output "[*] Displaying MSI summary"
     Install-Module MSI -Force
-    Get-MSISummaryInfo rport-client.msi
-    Get-AuthenticodeSignature rport-client.msi|Format-List
+    Get-MSISummaryInfo $msiFileName
+    Get-AuthenticodeSignature $msiFileName|Format-List
 }
