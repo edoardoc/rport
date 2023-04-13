@@ -41,5 +41,3 @@ else
 {
     Write-Error "rport.conf does not include user modifications"
 }
-
-Remove-Item "*.msi"
