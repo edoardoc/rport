@@ -7,7 +7,6 @@ param (
 )
 Write-Output "Making $msiFileName ver $major.$minor.$patch"
 Write-Output "--------------------------------------"
-exit 0
 $ErrorActionPreference = 'Stop'
 Get-ChildItem env:
 $PSVersionTable
