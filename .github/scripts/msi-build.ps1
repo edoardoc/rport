@@ -68,7 +68,10 @@ if ($SignMsi)
     Set-Content -Path cs.pfx -Value $binary -AsByteStream
 
     Write-Output "[*] Validate the certificate has been decoded correctly"
-    Get-PfxCertificate -FilePath cs.pfx
+    $SecurePassword=ConvertTo-SecureString -String "" -AsPlainText -Force # no password
+    $PfxData=Get-PfxData -FilePath ".\cs.pfx" -Password $SecurePassword
+    $SigningCert=$PfxData.EndEntityCertificates[0]
+    Write-Output "    $SigningCert"
 
     Write-Output "[*] Signing the generated MSI"
     & 'C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\signtool.exe' sign /f cs.pfx /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 /a $msiFileName
