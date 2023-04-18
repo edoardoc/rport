@@ -63,7 +63,11 @@ if ($SignMsi)
     Get-ChildItem -File *.msi
 
     Write-Output "[*] Decode the base64 encoded pfx from the env variable and store it into a file: $env:CS_PFX"
-    $binary = [Convert]::FromBase64String("$env:CS_PFX")
+    if (!$env:CS_PFX)
+    {
+        Write-Error "CS_PFX env is null or empty, signing cannot continue"
+    }
+    $binary = [Convert]::FromBase64String($env:CS_PFX)
     # "-Encoding Byte" is replaced by "-AsByteStream" 
     Set-Content -Path cs.pfx -Value $binary -AsByteStream
     Get-ChildItem -File *.pfx
