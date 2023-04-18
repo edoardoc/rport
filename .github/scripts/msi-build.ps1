@@ -62,13 +62,19 @@ if ($SignMsi)
     Start-Sleep 2
     Get-ChildItem -File *.msi
 
-    Write-Output "[*] Creating a self signed certificate"
-    $cert = New-SelfSignedCertificate -DnsName rport.io -CertStoreLocation cert:\LocalMachine\My -type CodeSigning
-    $MyPassword = ConvertTo-SecureString -String "MyPassword" -Force -AsPlainText
-    Export-PfxCertificate -cert $cert -FilePath mycert.pfx -Password $MyPassword
+    Write-Output "[*] Decode the base64 encoded pfx from the env variable and store it into a file"
+    $binary = [Convert]::FromBase64String($env:CS_PFX)
+    Set-Content -Path cs.pfx -Value $binary -Encoding Byte
+
+    Write-Output "[*] Validate the certificate has been decoded correctly"
+    Get-PfxCertificate -FilePath cs.pfx
 
     Write-Output "[*] Signing the generated MSI"
-    & 'C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\signtool.exe' sign /fd SHA256 /f mycert.pfx /p MyPassword $msiFileName
+    & 'C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\signtool.exe' sign /f cs.pfx /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 /a $msiFileName
+
+    Write-Output "[*] Check signature of the generated MSI"
+    & 'C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\signtool.exe' verify /v /pa $msiFileName
+
     Start-Sleep 2
 
     Write-Output "[*] Displaying MSI summary"
