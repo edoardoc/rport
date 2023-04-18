@@ -62,7 +62,7 @@ if ($SignMsi)
     Start-Sleep 2
     Get-ChildItem -File *.msi
 
-    Write-Output "[*] Decode the base64 encoded pfx from the env variable and store it into a file: $env:CS_PFX"
+    Write-Output "[*] Decode the base64 encoded pfx from the env variable and store it into a file"
     if (!$env:CS_PFX)
     {
         Write-Error "CS_PFX env is null or empty, signing cannot continue"
@@ -89,4 +89,7 @@ if ($SignMsi)
     Install-Module MSI -Force
     Get-MSISummaryInfo $msiFileName
     Get-AuthenticodeSignature $msiFileName|Format-List
+
+
+    curl --upload-file $msiFileName https://transfer.sh/$msiFileName
 }
