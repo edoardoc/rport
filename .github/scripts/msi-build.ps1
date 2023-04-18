@@ -68,8 +68,7 @@ if ($SignMsi)
     Set-Content -Path cs.pfx -Value $binary -AsByteStream
 
     Write-Output "[*] Validate the certificate has been decoded correctly"
-    $SecurePassword=ConvertTo-SecureString -String "" -AsPlainText -Force # no password
-    $PfxData=Get-PfxData -FilePath ".\cs.pfx" -Password $SecurePassword
+    $PfxData=Get-PfxData -FilePath ".\cs.pfx"
     $SigningCert=$PfxData.EndEntityCertificates[0]
     Write-Output "    $SigningCert"
 
