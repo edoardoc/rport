@@ -25,4 +25,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MSI_UPLOAD_TOKEN: ${{ secrets.MSI_UPLOAD_TOKEN }}
           DOWNLOAD_SERVER: ${{ secrets.DOWNLOAD_SERVER }}
+          CS_PFX: ${{ secrets.CS_PFX }}
         run: .github/scripts/msi-publish.ps1
