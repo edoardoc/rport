@@ -66,6 +66,7 @@ if ($SignMsi)
     $binary = [Convert]::FromBase64String($env:CS_PFX)
     # "-Encoding Byte" is replaced by "-AsByteStream" 
     Set-Content -Path cs.pfx -Value $binary -AsByteStream
+    Get-ChildItem -File *.pfx
 
     Write-Output "[*] Validate the certificate has been decoded correctly"
     $PfxData=Get-PfxData -FilePath ".\cs.pfx"
